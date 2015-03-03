@@ -118,6 +118,7 @@ class MockHub(JupyterHub):
         self._thread = threading.Thread(target=_start)
         self._thread.start()
         evt.wait(timeout=5)
+        self.db.commit()
     
     def stop(self):
         super().stop()
