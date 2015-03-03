@@ -280,6 +280,8 @@ def test_never_spawn(app, io_loop):
 
 
 def test_get_proxy(app, io_loop):
+    app.db.commit()
+    
     r = api_request(app, 'proxy')
     r.raise_for_status()
     reply = r.json()
