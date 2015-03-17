@@ -319,7 +319,7 @@ class User(Base):
         if hub is None:
             hub = db.query(Hub).first()
         self.server = Server(
-            cookie_name='%s-%s' % (hub.server.cookie_name, self.name),
+            cookie_name='%s-%s' % (hub.server.cookie_name, self.id),
             base_url=url_path_join(base_url, 'user', self.name),
         )
         db.add(self.server)
