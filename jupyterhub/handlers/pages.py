@@ -8,7 +8,6 @@ from tornado import web, gen
 from .. import orm
 from ..utils import admin_only, url_path_join
 from .base import BaseHandler
-from urllib.parse import quote
 
 
 class RootHandler(BaseHandler):
@@ -77,7 +76,7 @@ class SpawnHandler(BaseHandler):
             # not running, no form. Trigger spawn.
             # Creating the URL manually since the server does not
             # exist yet
-            url = url_path_join(self.base_url, 'user', quote(user.name))
+            url = url_path_join(self.base_url, 'user', user.escaped_name)
             self.redirect(url)
 
     @web.authenticated
