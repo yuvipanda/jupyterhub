@@ -300,7 +300,7 @@ class Proxy(LoggingConfigurable):
             user = user_dict[orm_user]
             if user.running:
                 good_routes.add(user.proxy_spec)
-                if user.name not in user_routes:
+                if user.name not in user_routes and not user.proxy_pending:
                     self.log.warning(
                         "Adding missing route for %s (%s)", user.name, user.server)
                     futures.append(self.add_user(user))
