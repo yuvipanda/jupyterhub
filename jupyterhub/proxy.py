@@ -283,6 +283,7 @@ class Proxy(LoggingConfigurable):
     @gen.coroutine
     def check_routes(self, user_dict, service_dict, routes=None):
         """Check that all users are properly routed on the proxy."""
+        self.log.info('starting check_routes run')
         if not routes:
             routes = yield self.get_all_routes()
 
@@ -331,6 +332,8 @@ class Proxy(LoggingConfigurable):
 
         for f in futures:
             yield f
+
+        self.log.info('done check_routes run')
 
     def add_hub_route(self, hub):
         """Add the default route for the Hub"""
