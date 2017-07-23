@@ -3,6 +3,7 @@
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
 
+from passlib.context import CryptContext
 from binascii import b2a_hex
 import errno
 import hashlib
@@ -163,6 +164,10 @@ def admin_only(self):
 
 
 # Token utilities
+_hash_context = CryptContext(
+    schemes=["bcrypt", "pbkdf2_sha256"],
+    deprecated="auto",
+)
 
 def new_token(*args, **kwargs):
     """Generator for new random tokens
@@ -172,26 +177,12 @@ def new_token(*args, **kwargs):
     return uuid.uuid4().hex
 
 
-def hash_token(token, salt=8, rounds=16384, algorithm='sha512'):
+def hash_token(token):
     """Hash a token, and return it as `algorithm:salt:hash`.
 
     If `salt` is an integer, a random salt of that many bytes will be used.
     """
-    h = hashlib.new(algorithm)
-    if isinstance(salt, int):
-        salt = b2a_hex(os.urandom(salt))
-    if isinstance(salt, bytes):
-        bsalt = salt
-        salt = salt.decode('utf8')
-    else:
-        bsalt = salt.encode('utf8')
-    btoken = token.encode('utf8', 'replace')
-    h.update(bsalt)
-    for i in range(rounds):
-        h.update(btoken)
-    digest = h.hexdigest()
-
-    return "{algorithm}:{rounds}:{salt}:{digest}".format(**locals())
+    return _hash_context.hash(token)
 
 
 def compare_token(compare, token):
@@ -199,12 +190,7 @@ def compare_token(compare, token):
 
     Uses the same algorithm and salt of the hashed token for comparison.
     """
-    algorithm, srounds, salt, _ = compare.split(':')
-    hashed = hash_token(token, salt=salt, rounds=int(srounds), algorithm=algorithm).encode('utf8')
-    compare = compare.encode('utf8')
-    if compare_digest(compare, hashed):
-        return True
-    return False
+    return _hash_context.verify(token, compare)
 
 
 def url_path_join(*pieces):
