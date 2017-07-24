@@ -92,10 +92,22 @@ class BaseHandler(RequestHandler):
     def oauth_provider(self):
         return self.settings['oauth_provider']
 
+    def print_changes(self, myobj):
+        from sqlalchemy.orm import class_mapper
+        from sqlalchemy import inspect
+        inspr = inspect(myobj)
+        attrs = class_mapper(myobj.__class__).column_attrs  # exclude relationships
+        histories = []
+        for attr in attrs:
+            hist = getattr(inspr.attrs, attr.key).history
+            histories.append((attr.key, hist.has_changes()))
+        return histories
+
     def finish(self, *args, **kwargs):
         """Roll back any uncommitted transactions from the handler."""
         if self.db.dirty:
-            self.log.info('db is dirty! %s', repr(self.db.dirty))
+            all_histories = [self.print_changes(o) for o in self.db.dirty]
+            self.log.info('db is dirty! %s : %s', repr(self.db.dirty), all_histories)
             self.db.rollback()
         super().finish(*args, **kwargs)
 
