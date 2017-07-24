@@ -94,7 +94,7 @@ class BaseHandler(RequestHandler):
 
     def finish(self, *args, **kwargs):
         """Roll back any uncommitted transactions from the handler."""
-        self.db.rollback()
+        self.db.commit()
         super().finish(*args, **kwargs)
 
     #---------------------------------------------------------------
