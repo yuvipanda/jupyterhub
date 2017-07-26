@@ -115,12 +115,13 @@ class Server(HasTraits):
             return self.url.replace(self._connect_ip, self.ip or '*', 1)
         return self.url
 
+    @gen.coroutine
     def wait_up(self, timeout=10, http=False):
         """Wait for this server to come up"""
         if http:
-            return wait_for_http_server(self.url, timeout=timeout)
+            return (yield wait_for_http_server(self.url, timeout=timeout))
         else:
-            return wait_for_server(self._connect_ip, self.port, timeout=timeout)
+            return (yield wait_for_server(self._connect_ip, self.port, timeout=timeout))
 
     def is_up(self):
         """Is the server accepting connections?"""
