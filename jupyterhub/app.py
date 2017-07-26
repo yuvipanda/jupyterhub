@@ -1269,7 +1269,6 @@ class JupyterHub(Application):
         super().initialize(*args, **kwargs)
         if self.generate_config or self.subapp:
             return
-        self.load_config_file(self.config_file)
         self.init_logging()
         if 'JupyterHubApp' in self.config:
             self.log.warning("Use JupyterHub in config, not JupyterHubApp. Outdated config:\n%s",
@@ -1530,6 +1529,8 @@ class JupyterHub(Application):
     @classmethod
     def launch_instance(cls, argv=None):
         self = cls.instance()
+        self.parse_command_line()
+        self.load_config_file(self.config_file)
         loop = IOLoop.current()
         loop.add_callback(self.launch_instance_async, argv)
         try:
