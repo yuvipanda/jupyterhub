@@ -260,6 +260,10 @@ class SingleUserNotebookApp(NotebookApp):
     def _user_changed(self, change):
         self.log.name = change.new
 
+    @property
+    def event_data(self):
+        return { 'username': self.user }
+
     hub_host = Unicode().tag(config=True)
 
     hub_prefix = Unicode('/hub/').tag(config=True)
