@@ -14,13 +14,13 @@ class Pagination(Configurable):
 
     # configurable options
     default_per_page = Integer(
-        100,
+        10000,
         config=True,
         help="Default number of entries per page for paginated results.",
     )
 
     max_per_page = Integer(
-        250,
+        250000,
         config=True,
         help="Maximum number of entries per page for paginated results.",
     )
